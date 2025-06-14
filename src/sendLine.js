@@ -2,25 +2,10 @@ const LINE_TOKEN =
   "WsgLYFuMSsXFxlWxgygRIEZ4rFO3RLo5YuoyHsatIIG2zXuxVJQvGrI+KxqZ+2RhhFLpOrDY25E8gNtu/g455rQHSrDlnN/OJenreBG1r2EyBOIcEPYtEmYWBD+bS7y6Dp9+ChvCFSisCVRNYthKCgdB04t89/1O/w1cDnyilFU=";
 const USER_ID = "U8f80f8b94450a0cfe1089ad8c7d65c28";
 
-document.getElementById("lineForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const form = e.target;
-  const message = form.message.value.trim(); // ← 空白削除の保険
-
-  if (!message) {
-    document.getElementById("result").textContent = "⚠ メッセージが空です";
-    return;
-  }
-
+export async function sendLineMessage(message) {
   const payload = {
     to: USER_ID,
-    messages: [
-      {
-        type: "text",
-        text: message,
-      },
-    ],
+    messages: [{ type: "text", text: message }],
   };
 
   try {
@@ -33,20 +18,15 @@ document.getElementById("lineForm").addEventListener("submit", async (e) => {
       body: JSON.stringify(payload),
     });
 
-    const result = document.getElementById("result");
-
     if (response.ok) {
-      result.textContent = "✅ 送信成功！";
-      // Three.js アニメーション呼び出し（存在するなら）
-      if (typeof initThreeScene === "function") {
-        initThreeScene();
-      }
+      return true;
     } else {
       const error = await response.json();
-      result.textContent = `❌ 失敗: ${JSON.stringify(error)}`;
+      console.error("❌ 送信失敗:", error);
+      return false;
     }
   } catch (err) {
-    console.error(err);
-    document.getElementById("result").textContent = "❌ ネットワークエラー";
+    console.error("❌ ネットワークエラー:", err);
+    return false;
   }
-});
+}
