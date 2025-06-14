@@ -2,10 +2,20 @@ const LINE_TOKEN =
   "WsgLYFuMSsXFxlWxgygRIEZ4rFO3RLo5YuoyHsatIIG2zXuxVJQvGrI+KxqZ+2RhhFLpOrDY25E8gNtu/g455rQHSrDlnN/OJenreBG1r2EyBOIcEPYtEmYWBD+bS7y6Dp9+ChvCFSisCVRNYthKCgdB04t89/1O/w1cDnyilFU=";
 const USER_ID = "U8f80f8b94450a0cfe1089ad8c7d65c28";
 
-export async function sendLineMessage(title, message) {
+document.getElementById("lineForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const form = e.target;
+  const message = form.message.value; // タイトル不要
+
   const payload = {
     to: USER_ID,
-    messages: [{ type: "text", text: `【${title}】\n${message}` }],
+    messages: [
+      {
+        type: "text",
+        text: message,
+      },
+    ],
   };
 
   try {
@@ -18,15 +28,17 @@ export async function sendLineMessage(title, message) {
       body: JSON.stringify(payload),
     });
 
+    const result = document.getElementById("result");
+
     if (response.ok) {
-      return true;
+      result.textContent = "✅ 送信成功！";
+      initThreeScene();
     } else {
       const error = await response.json();
-      console.error("送信失敗:", error);
-      return false;
+      result.textContent = `❌ 失敗: ${JSON.stringify(error)}`;
     }
   } catch (err) {
     console.error(err);
-    return false;
+    document.getElementById("result").textContent = "❌ ネットワークエラー";
   }
-}
+});
