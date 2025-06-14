@@ -6,7 +6,12 @@ document.getElementById("lineForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const form = e.target;
-  const message = form.message.value; // タイトル不要
+  const message = form.message.value.trim(); // ← 空白削除の保険
+
+  if (!message) {
+    document.getElementById("result").textContent = "⚠ メッセージが空です";
+    return;
+  }
 
   const payload = {
     to: USER_ID,
@@ -32,7 +37,10 @@ document.getElementById("lineForm").addEventListener("submit", async (e) => {
 
     if (response.ok) {
       result.textContent = "✅ 送信成功！";
-      initThreeScene();
+      // Three.js アニメーション呼び出し（存在するなら）
+      if (typeof initThreeScene === "function") {
+        initThreeScene();
+      }
     } else {
       const error = await response.json();
       result.textContent = `❌ 失敗: ${JSON.stringify(error)}`;
